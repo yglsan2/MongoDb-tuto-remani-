@@ -1,0 +1,187 @@
+# MongoDB - Tutoriel de Commandes
+
+
+
+
+### Lancer MongoDB en local
+Commande bash ou cmd : 
+mongod
+
+Se connecter à la base de données avec mongosh
+
+Une fois le serveur MongoDB lancé, connecte-toi avec le shell mongosh :
+
+mongosh
+
+Commandes de gestion de base de données
+Lister les bases de données
+
+Pour voir toutes les bases de données disponibles :
+
+show dbs
+
+Créer ou se connecter à une base de données
+
+MongoDB crée une base de données lorsqu'une collection est ajoutée. Si tu veux spécifier une base de données, utilise :
+
+use nom_de_la_base
+
+Supprimer une base de données
+
+Pour supprimer la base de données active :
+
+db.dropDatabase()
+
+Commandes de gestion de collections
+Lister les collections dans une base de données
+
+Pour voir les collections présentes dans la base de données active :
+
+show collections
+
+Créer une collection
+
+Tu peux créer une collection (elle sera créée automatiquement lorsque tu insères un document) :
+
+db.createCollection("nom_de_la_collection")
+
+Supprimer une collection
+
+Pour supprimer une collection :
+
+db.nom_de_la_collection.drop()
+
+Commandes CRUD (Create, Read, Update, Delete)
+Insertion d'un document
+
+Pour insérer un seul document dans une collection :
+
+db.nom_de_la_collection.insertOne({ clé: "valeur", autre_clé: "autre_valeur" })
+
+Pour insérer plusieurs documents à la fois :
+
+db.nom_de_la_collection.insertMany([{ clé: "valeur" }, { clé: "valeur" }])
+
+Lire des documents
+
+Pour récupérer tous les documents d'une collection :
+
+db.nom_de_la_collection.find()
+
+Pour afficher tous les documents sous forme de tableau :
+
+db.nom_de_la_collection.find().pretty()
+
+Pour récupérer un seul document correspondant à une condition :
+
+db.nom_de_la_collection.findOne({ clé: "valeur" })
+
+Mettre à jour un document
+
+Pour mettre à jour un seul document :
+
+db.nom_de_la_collection.updateOne(
+    { clé: "valeur" },  // Condition de recherche
+    { $set: { clé_a_mettre_a_jour: "nouvelle_valeur" } }
+)
+
+Pour mettre à jour plusieurs documents :
+
+db.nom_de_la_collection.updateMany(
+    { clé: "valeur" },  // Condition de recherche
+    { $set: { clé_a_mettre_a_jour: "nouvelle_valeur" } }
+)
+
+Supprimer un document
+
+Pour supprimer un seul document :
+
+db.nom_de_la_collection.deleteOne({ clé: "valeur" })
+
+Pour supprimer plusieurs documents :
+
+db.nom_de_la_collection.deleteMany({ clé: "valeur" })
+
+Commandes d'indexation
+Créer un index
+
+Pour créer un index sur un champ spécifique :
+
+db.nom_de_la_collection.createIndex({ clé: 1 })  // 1 pour ordre ascendant, -1 pour ordre descendant
+
+Lister les indexes
+
+Pour voir tous les indexes d'une collection :
+
+db.nom_de_la_collection.getIndexes()
+
+Supprimer un index
+
+Pour supprimer un index par son nom :
+
+db.nom_de_la_collection.dropIndex("nom_de_l_index")
+
+Commandes d'agrégation
+Utiliser l'agrégation pour des requêtes complexes
+
+L'agrégation permet de faire des opérations complexes sur les données. Exemple de pipeline de base :
+
+db.nom_de_la_collection.aggregate([
+    { $match: { clé: "valeur" } },  // Filtrer les documents
+    { $group: { _id: "$clé", total: { $sum: "$autre_clé" } } }  // Grouper et calculer des sommes
+])
+
+Tri des documents
+
+Pour trier les résultats d'une requête par ordre croissant ou décroissant :
+
+db.nom_de_la_collection.find().sort({ clé: 1 })  // 1 pour ascendant, -1 pour descendant
+
+Commandes de gestion des utilisateurs
+Créer un utilisateur avec des rôles spécifiques
+
+Pour créer un utilisateur avec des rôles spécifiques :
+
+db.createUser({
+    user: "nom_utilisateur",
+    pwd: "mot_de_passe",
+    roles: [{ role: "readWrite", db: "nom_de_la_base" }]
+})
+
+Lister les utilisateurs
+
+Pour voir tous les utilisateurs de la base de données actuelle :
+
+show users
+
+Supprimer un utilisateur
+
+Pour supprimer un utilisateur :
+
+db.dropUser("nom_utilisateur")
+
+Sauvegarde et restauration de la base de données
+Sauvegarder une base de données
+
+Utilise la commande mongodump en ligne de commande pour sauvegarder une base de données :
+
+mongodump --db nom_de_la_base
+
+Restaurer une base de données
+
+Utilise mongorestore pour restaurer la base de données depuis un fichier dump :
+
+mongorestore --db nom_de_la_base dump/nom_de_la_base
+
+Commandes de performance
+Vérifier l'état de la base de données
+
+Pour obtenir des informations sur l'état actuel de la base de données :
+
+db.stats()
+
+Vérifier les indices d'une collection
+
+Pour vérifier si des indices existent et leurs performances :
+
+db.nom_de_la_collection.indexStats()
