@@ -1,0 +1,185 @@
+Écriture de requêtes MongoDB
+Introduction
+Vous allez apprendre à effectuer des requêtes sur une base de données MongoDB. Vous pouvez utiliser l'interface graphique MongoDB Compass ou la ligne de commande Mongosh pour cela.
+Préparation de la base de données
+Le fichier films.json dans ce dépôt contient des documents à insérer dans une collection movies. Si vous avez déjà démarré MongoDB avec Docker, la collection est déjà prête. Sinon, suivez ces étapes pour une installation locale :
+    1. Créez une base de données cinema.
+    2. Créez une collection movies.
+    3. Chargez les documents depuis le fichier films.json.
+Utilisation de MongoDB Compass
+MongoDB Compass propose deux modes de fonctionnement :
+    1. Console MongoShell : similaire à Mongosh, pour écrire des requêtes manuellement.
+    2. Interface graphique : pour effectuer des requêtes sans écrire de code.
+Première requête avec Mongo Compass
+Voici un exemple de requête à compléter pour afficher tous les titres de films réalisés par Spielberg et du genre Aventure.
+
+Se mettre dans cinema : 
+use cinema
+
+puis se mettre dans la db.movies. 
+db.movies
+
+ça créé le fichier database.movies au sein de cinema
+Puis dans la section cinéma de MongoDbCompass, aller dans « movies », et cliquer sur add data, 
+là coller le fichier json du dossier, qu’on trouve en cliquant sur de dossier initdb, 
+prendre le fichier movies.json et l’updater sur Mongodb 
+Une fois le fichier en place, prendre le mongosh en bas du logiciel MongoDbCompass, puis 
+
+s’assurer qu’on n’est plus en mode « test ». 
+s’il y a écrit « test », refaire : 
+use cinema
+db.movies, et commencer à écrire . 
+
+
+
+db.movies.find(
+  { genre: "Aventure", "director.last_name": "Spielberg" }, 
+  { title: 1 }
+)
+
+
+Ca renvoie les films en question avec l’id et le titre. 
+
+
+Autres requêtes à compléter
+	1. Afficher tous les titres des films parus en 2000 :
+
+db.movies.find({ year: 2000 }, { title: 1 })
+db.movies.find(
+  { genre: "Aventure", "director.last_name": "Spielberg" }, 
+  { title: 1 }
+)
+
+	2. Afficher tous les titres des films du genre "Action" : 
+
+db.movies.find({ genre: "Action" }, { title: 1 })
+
+	3.Afficher la liste de tous les genres de films sans doublon : 
+
+db.movies.distinct("genre")
+
+
+	4.Afficher les titres des films français et leur date de sortie : 
+
+db.movies.find({ "country": "France" }, { title: 1, year: 1 })
+
+
+	5.Afficher les titres des films dans lesquels "Uma Thurman" a joué : 
+
+db.movies.find({ "actors.name": "Uma Thurman" }, { title: 1, year: 1 }) 
+
+
+	6.Afficher le nom complet du réalisateur du film "Memento" : 
+
+db.movies.find({ title: "Memento" }, { "director.name": 1 })
+
+
+	7. Afficher les noms et prénoms des acteurs dans "Apocalypse Now" : 
+
+db.movies.find({ title: "Apocalypse Now" }, { "actors.name": 1 })
+
+
+	8.Afficher les titres des films sortis entre 1968 et 1978 (inclus) : 
+
+db.movies.find({ year: { $gte: 1968, $lte: 1978 } }, { title: 1, year: 1 })
+
+9.Afficher les titres et années de films sortis avant 1968 (sans inclure 1968) : 
+
+db.movies.find({ year: { $lt: 1968 } }, { title: 1, year: 1 })
+
+10.Afficher et trier les films sortis avant 1968, par années croissantes et décroissantes (limité à 5 résultats) : 
+Par années croissantes : 
+db.movies.find({ year: { $lt: 1968 } }).sort({ year: 1 }).limit(5)
+
+Par années décroissantes : 
+db.movies.find({ year: { $lt: 1968 } }).sort({ year: -1 }).limit(5)
+
+
+Utilisation des agrégations
+    1. Nombre de films par genre (avec agrégation) :
+db.movies.aggregate([
+  { $group: { _id: "$genre", count: { $sum: 1 } } }
+])
+
+2. Compter les films dont l'année est après 2000 : 
+
+db.movies.countDocuments({ year: { $gte: 2000 } })
+
+
+3. Afficher les films contenant "la guerre du Vietnam" dans le résumé : 
+
+db.movies.find({ summary: /la guerre du Vietnam/i }, { title: 1, year: 1 })
+
+
+Modification de données
+1. Modifier l'année de sortie du film "La Guerre des étoiles" :
+db.movies.updateOne({ title: "La Guerre des étoiles" }, { $set: { year: 1978 } })
+
+2.Ajouter un acteur au film "Le Parrain" : 
+
+db.movies.updateOne(
+  { title: "Le Parrain" },
+  { $push: { "actors": { name: "Diane Keaton", born: 1946 } } }
+)
+
+3. Ajouter plusieurs acteurs à "Le Parrain" : 
+db.movies.updateOne(
+  { title: "Le Parrain" },
+  { $push: { "actors": { $each: [{ name: "John Cazale", born: 1935 }, { name: "Richard Conte", born: 1910 }] } } }
+)
+
+Suppression de données
+1. Supprimer le film "Impitoyable" :
+
+
+db.movies.deleteOne({ title: "Impitoyable" })
+
+
+2.Supprimer tous les films de 1970 : 
+db.movies.deleteMany({ year: 1970 })
+
+Exportation de la base de données
+    1. Faire un dump de la base de données avec MongoDB Compass.
+    2. Faire un dump en ligne de commande (Powershell) :
+
+mongodump --db cinema --out /chemin/vers/dossier
+
+
+
+Création d'une nouvelle collection : "exploitation"
+Nous allons créer une nouvelle collection pour stocker les revenus des films en fonction de leur pays d'exploitation ("box-office").
+1. Créer une collection "exploitation" :
+db.exploitation.insertOne({
+  "box_office_fr": 13850000,
+  "box_office_us": 98000000,
+  "film_id": "movie:665"
+})
+
+
+renvoie quelque chose comme : 
+
+
+{ acknowledged : true,
+insertedID : ObjectID(‘un_paquet_de_chiffres’)
+}
+
+
+2. Ajouter les autres films de manière similaire.
+Requêtes avec jointures
+Pour joindre les données des collections movies et exploitation, utilisez l'agrégation avec $lookup.
+1. Afficher le titre des films et le box-office français pour chaque film :
+
+db.movies.aggregate([
+  { $lookup: { from: "exploitation", localField: "_id", foreignField: "film_id", as: "box_office" } },
+  { $project: { title: 1, "box_office.box_office_fr": 1 } }
+])
+
+
+2. Somme des box-offices français par pays d'origine : 
+
+db.movies.aggregate([
+  { $lookup: { from: "exploitation", localField: "_id", foreignField: "film_id", as: "box_office" } },
+  { $group: { _id: "$country", total_box_office_fr: { $sum: "$box_office.box_office_fr" } } }
+])
+
+
